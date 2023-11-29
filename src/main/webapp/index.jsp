@@ -10,6 +10,7 @@
 <p>Выберите тур и начните свое приключение</p>
 <a href="WEB-INF/jsp/booking.jsp">Перейти к бронированию</a>
 <br>
+<a href="WEB-INF/jsp/registration.jsp">Регистрация</a>
 <a href="WEB-INF/jsp/profile.jsp">Ваш профиль</a>
 </body>
 </html>

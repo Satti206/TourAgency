@@ -40,7 +40,7 @@ public class RegistrationServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.getRequestDispatcher("/jsp/Registration.jsp").forward(request, response);
+        request.getRequestDispatcher("WEB-INF/jsp/registration.jsp").forward(request, response);
     }
 
     @Override
