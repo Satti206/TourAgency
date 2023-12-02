@@ -17,7 +17,7 @@ import java.sql.SQLException;
 public class RegistrationServlet extends HttpServlet {
     private static final String DB_USER = "root";
     private static final String DB_PASSWORD = "19707194";
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/tour_booking";
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/tour_booking?useUnicode=true&characterEncoding=UTF-8";
 
 
     private UsersRepository usersRepository;
@@ -49,12 +49,14 @@ public class RegistrationServlet extends HttpServlet {
         String password = request.getParameter("password");
         String name = request.getParameter("name");
         String lastname = request.getParameter("lastname");
+        String role = request.getParameter("role");
 
         User newUser = User.builder()
                 .email(email)
                 .password(password)
                 .name(name)
                 .lastname(lastname)
+                .role(role)
                 .build();
 
         usersRepository.save(newUser);

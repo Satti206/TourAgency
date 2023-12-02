@@ -1,5 +1,6 @@
 package ru.itis.servlets;
 
+import ru.itis.models.Tour;
 import ru.itis.models.User;
 import ru.itis.repository.UsersRepository;
 
@@ -10,7 +11,8 @@ import java.util.Optional;
 
 public class UsersRepositoryJdbcImpl implements UsersRepository {
     private Connection connection;
-    private static final String SQL_INSERT_INTO_USERS = "INSERT INTO users (email, password, name, lastname) VALUES (?, ?, ?, ?)";
+    private static final String SQL_INSERT_INTO_USERS = "INSERT INTO users (email, password, name, lastname, role)" +
+            " VALUES (?, ?, ?, ?, ?)";
     private static final String SQL_SELECT_BY_LOGIN = "SELECT * FROM users WHERE email = ? AND password = ?";
     private static final String SQL_SELECT_BY_ID = "SELECT * FROM users WHERE id = ?";
 
@@ -31,6 +33,7 @@ public class UsersRepositoryJdbcImpl implements UsersRepository {
                         .password(resultSet.getString("password"))
                         .name(resultSet.getString("name"))
                         .lastname(resultSet.getString("lastname"))
+                        .role(resultSet.getString("role"))
                         .build();
                 result.add(user);
             }
@@ -51,6 +54,7 @@ public class UsersRepositoryJdbcImpl implements UsersRepository {
             statement.setString(2, entity.getPassword());
             statement.setString(3, entity.getName());
             statement.setString(4, entity.getLastname());
+            statement.setString(5,entity.getRole());
 
             statement.executeUpdate();
 
@@ -68,7 +72,7 @@ public class UsersRepositoryJdbcImpl implements UsersRepository {
     }
 
     @Override
-    public Optional<User> findByEmail(User user) {
+    public Optional<User> findByEmailAndRole(User user) {
         try (PreparedStatement statement = connection.prepareStatement(SQL_SELECT_BY_LOGIN)) {
             statement.setString(1, user.getEmail());
             statement.setString(2, user.getPassword());
@@ -81,6 +85,7 @@ public class UsersRepositoryJdbcImpl implements UsersRepository {
                             .password(resultSet.getString("password"))
                             .name(resultSet.getString("name"))
                             .lastname(resultSet.getString("lastname"))
+                            .role(resultSet.getString("role"))
                             .build());
                 }
             }
@@ -116,6 +121,31 @@ public class UsersRepositoryJdbcImpl implements UsersRepository {
         return Optional.empty();
     }
     @Override
+    public Optional<User> findById(long id) {
+        try (PreparedStatement statement = connection.prepareStatement(SQL_SELECT_BY_ID)) {
+            statement.setLong(1, id);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return Optional.of(User.builder()
+                            .id(resultSet.getLong("id"))
+                            .email(resultSet.getString("email"))
+                            .password(resultSet.getString("password"))
+                            .name(resultSet.getString("name"))
+                            .lastname(resultSet.getString("lastname"))
+                            .build());
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return Optional.empty();
+    }
+
+
+    @Override
     public void close() {
         try {
             if (connection != null) {
@@ -125,4 +155,31 @@ public class UsersRepositoryJdbcImpl implements UsersRepository {
             throw new RuntimeException(e);
         }
     }
-}
+
+    @Override
+    public List<Tour> findAllTours() {
+        try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM tours");
+             ResultSet resultSet = statement.executeQuery()) {
+
+            List<Tour> result = new ArrayList<>();
+            while (resultSet.next()) {
+                Tour tour = Tour.builder()
+                        .id(resultSet.getLong("id"))
+                        .name(resultSet.getString("name"))
+                        .description(resultSet.getString("description"))
+                        .price(resultSet.getInt("price"))
+                        .direction(resultSet.getString("direction"))
+                        .country(resultSet.getString("country"))
+                        .town(resultSet.getString("town"))
+                        .startDate(resultSet.getString("startDate"))
+                        .endDate(resultSet.getString("endDate"))
+                        .build();
+                result.add(tour);
+            }
+
+            return result;
+
+        } catch (SQLException e) {
+            throw new IllegalStateException(e);
+        }
+    }}
