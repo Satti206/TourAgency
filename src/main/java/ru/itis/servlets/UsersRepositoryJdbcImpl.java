@@ -182,4 +182,39 @@ public class UsersRepositoryJdbcImpl implements UsersRepository {
         } catch (SQLException e) {
             throw new IllegalStateException(e);
         }
-    }}
+    }
+    @Override
+    public void updateProfile(User user) throws SQLException {
+        String query = "UPDATE users SET name = ?, lastname = ? WHERE id = ?";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, user.getName());
+            statement.setString(2, user.getLastname());
+            statement.setLong(3, user.getId());
+            statement.executeUpdate();
+        }
+    }
+
+    @Override
+    public void updateAvatar(long userId, byte[] avatar) throws SQLException {
+        String query = "UPDATE users SET avatar = ? WHERE id = ?";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setBytes(1, avatar);
+            statement.setLong(2, userId);
+            statement.executeUpdate();
+        }
+    }
+
+    private User mapUser(ResultSet resultSet) throws SQLException {
+        return User.builder()
+                .id(resultSet.getLong("id"))
+                .name(resultSet.getString("name"))
+                .lastname(resultSet.getString("lastname"))
+                .email(resultSet.getString("email"))
+                .password(resultSet.getString("password"))
+                .role(resultSet.getString("role"))
+                .profilePicturePath(resultSet.getString("profile_picture_path"))
+                .avatar(resultSet.getBytes("avatar"))
+                .build();
+    }
+}
+

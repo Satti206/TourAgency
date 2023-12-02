@@ -12,8 +12,11 @@ public interface UsersRepository {
     void save(User entity);
     Optional<User> findByEmailAndRole(User user);
     Optional<User> getById(long id);
-    Optional<User> findById(long id);
+    Optional<User> findById(long id) throws SQLException;//вот тут добавила throws
     void close() throws SQLException;
     List<Tour> findAllTours();
+    void updateProfile(User user) throws SQLException;
+
+    void updateAvatar(long userId, byte[] avatar) throws SQLException;
 
 }

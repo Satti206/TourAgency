@@ -65,11 +65,18 @@
     <h2>Выбирайте и отправляйтесь в незабываемое приключение:</h2>
     <ul>
         <c:forEach var="tour" items="${tours}">
-            <li>${tour.name} - ${tour.description} - ${tour.price}</li>
+            <li>
+                    ${tour.name} - ${tour.description} - ${tour.price}
+                <c:url var="profileUrl" value="/Profile">
+                    <c:param name="userId" value="${tour.user.userId}" />
+                </c:url>
+            </li>
         </c:forEach>
+        <li><a href="Profile">Мой профиль</a></li>
+
     </ul>
 </section>
-<li><a href="">Ваш профиль</a></li>
+
 
 </body>
 </html>
